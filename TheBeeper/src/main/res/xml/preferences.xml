@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="keep_screen_on"
+        android:defaultValue="false"
+        android:title="@string/keep_screen_on"/>
+    <CheckBoxPreference
+        android:key="led_notification_enabled"
+        android:defaultValue="false"
+        android:title="@string/enable_led_notification"/>
+    <net.damian.wojdat.Beeper.preference.SliderDialogPreference
+        android:defaultValue="50"
+        android:key="beep_volume"
+        android:title="@string/beep_volume"/>
+</PreferenceScreen>

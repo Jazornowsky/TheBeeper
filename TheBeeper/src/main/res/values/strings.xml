@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_name">The Beeper</string>
+    <string name="dummy_activity">Dummy Activity</string>
+
+    <!-- SettingsActivity/SettingsFragment -->
+    <string name="keep_screen_on">Keep screen on</string>
+    <string name="beep_volume">Beep volume</string>
+    <string name="enable_led_notification">Enable led notification</string>
+</resources>

@@ -1,0 +1,30 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.wojdat.damian.thebeeper">
+
+    <application
+        android:name=".Beeper"
+        android:allowBackup="true"
+        android:icon="@drawable/watch04_star"
+        android:label="@string/service_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:persistent="true">
+
+        <activity
+            android:name=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".BeeperService"
+            android:icon="@drawable/watch04_star"
+            android:label="@string/service_name"
+            android:exported="false">
+        </service>
+    </application>
+
+</manifest>
