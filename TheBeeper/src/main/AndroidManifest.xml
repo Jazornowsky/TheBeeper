@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.wojdat.damian.thebeeper">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".Beeper"
         android:allowBackup="true"
@@ -14,17 +16,27 @@
             android:name=".SettingsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service
             android:name=".BeeperService"
+            android:process=":BeeperService"
+            android:stopWithTask="false"
             android:icon="@drawable/watch04_star"
             android:label="@string/service_name"
-            android:exported="false">
-        </service>
+            android:exported="false"></service>
+        <service
+            android:name=".BeeperBeepService"
+            android:exported="false"
+            android:icon="@drawable/watch04_star"
+            android:label="@string/beeping_service"
+            android:stopWithTask="false"></service>
+
+        <receiver
+            android:name=".BeeperServiceRestartBroadcastReceiver"
+            android:exported="true" />
     </application>
 
 </manifest>

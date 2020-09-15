@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <SwitchPreference
+        app:defaultValue="true"
+        app:key="beeper_enabled"
+        app:title="@string/enabled" />
+    <!--
     <CheckBoxPreference
-        android:key="keep_screen_on"
-        android:defaultValue="false"
-        android:title="@string/keep_screen_on"/>
-    <CheckBoxPreference
-        android:key="led_notification_enabled"
-        android:defaultValue="false"
-        android:title="@string/enable_led_notification"/>
-    <net.damian.wojdat.Beeper.preference.SliderDialogPreference
-        android:defaultValue="50"
-        android:key="beep_volume"
-        android:title="@string/beep_volume"/>
+        app:key="led_notification_enabled"
+        app:defaultValue="false"
+        app:title="@string/enable_led_notification"/>-->
+    <net.wojdat.damian.thebeeper.preference.SliderPreference
+        app:defaultValue="50"
+        app:key="beep_volume"
+        app:title="@string/beep_volume" />
+    <net.wojdat.damian.thebeeper.preference.HoursPreference
+        app:key="enabled_hours"
+        app:title="@string/enabled_hours" />
 </PreferenceScreen>
