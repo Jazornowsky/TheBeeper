@@ -1,4 +1,4 @@
-package net.wojdat.damian.thebeeper;
+package net.wojdat.damian.thebeeper.util;
 
 import java.util.HashSet;
 import java.util.Set;

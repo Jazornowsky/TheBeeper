@@ -7,6 +7,8 @@ import android.util.Log;
 
 import net.wojdat.damian.thebeeper.preference.SliderDialog;
 import net.wojdat.damian.thebeeper.preference.SliderPreference;
+import net.wojdat.damian.thebeeper.service.BeeperService;
+import net.wojdat.damian.thebeeper.util.PreferenceUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +22,6 @@ import androidx.preference.PreferenceManager;
  * Created by Xtreme on 2015-08-23.
  */
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
-
     private Beeper beeper;
 
     @Override
@@ -96,10 +97,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     }
 
     private Intent getBeeperServiceIntent(SharedPreferences sharedPreferences) {
-        ArrayList<String> enabledHours = new ArrayList<>();
-        enabledHours.addAll(sharedPreferences.getStringSet(
-                Beeper.PREF_ENABLED_HOURS,
-                Collections.<String>emptySet()));
+        ArrayList<String> enabledHours = new ArrayList<>(
+                sharedPreferences.getStringSet(
+                        Beeper.PREF_ENABLED_HOURS,
+                        Collections.<String>emptySet()));
         Intent beeperServiceIntent = BeeperService.getBeeperServiceIntent(
                 getContext(),
                 sharedPreferences.getBoolean(

@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import net.wojdat.damian.thebeeper.service.BeeperService;
+import net.wojdat.damian.thebeeper.util.PreferenceUtil;
+
 import java.util.ArrayList;
 
 /**

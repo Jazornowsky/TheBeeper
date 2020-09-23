@@ -2,6 +2,7 @@
     package="net.wojdat.damian.thebeeper">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".Beeper"
@@ -12,8 +13,7 @@
         android:theme="@style/AppTheme"
         android:persistent="true">
 
-        <activity
-            android:name=".SettingsActivity">
+        <activity android:name=".SettingsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,22 +21,35 @@
         </activity>
 
         <service
-            android:name=".BeeperService"
+            android:name=".service.BeeperJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".service.BeeperService"
             android:process=":BeeperService"
             android:stopWithTask="false"
             android:icon="@drawable/watch04_star"
             android:label="@string/service_name"
-            android:exported="false"></service>
+            android:exported="false" />
         <service
-            android:name=".BeeperBeepService"
+            android:name=".service.BeeperBeepService"
             android:exported="false"
             android:icon="@drawable/watch04_star"
             android:label="@string/beeping_service"
-            android:stopWithTask="false"></service>
+            android:stopWithTask="false" />
 
         <receiver
             android:name=".BeeperServiceRestartBroadcastReceiver"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.REBOOT" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="net.wojdat.damian.thebeeper.BeeperService" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package net.wojdat.damian.thebeeper;
+package net.wojdat.damian.thebeeper.service;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -12,10 +12,12 @@ import android.graphics.Color;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.time.LocalDateTime;
+import net.wojdat.damian.thebeeper.Beeper;
+import net.wojdat.damian.thebeeper.BeeperServiceRestartBroadcastReceiver;
+import net.wojdat.damian.thebeeper.R;
+import net.wojdat.damian.thebeeper.SettingsActivity;
+
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import androidx.core.app.NotificationCompat;
 
@@ -23,35 +25,31 @@ import androidx.core.app.NotificationCompat;
  * Created by 7 on 2015-02-26.
  */
 public class BeeperService extends Service {
-
-    private Beeper beeper;
-    private AlarmManager alarmManager;
     private Boolean restart = Boolean.TRUE;
     private Boolean enabled;
     private Integer volume;
     private ArrayList<String> enabledHours;
-    private PendingIntent beeperBeepServicePendingIntent;
     private Notification notification;
 
     public static Intent getBeeperServiceIntent(Context context,
                                                 Boolean enabled,
                                                 Integer volume,
                                                 ArrayList<String> enabledHours) {
-        Intent beeperBeepServiceIntent = new Intent(context, BeeperService.class);
-        beeperBeepServiceIntent.putExtra(
+        Intent beeperServiceIntent = new Intent(context, BeeperService.class);
+        beeperServiceIntent.putExtra(
                 Beeper.PREF_ENABLED,
                 enabled);
-        beeperBeepServiceIntent.putExtra(
+        beeperServiceIntent.putExtra(
                 Beeper.PREF_BEEP_VOLUME,
                 volume);
-        beeperBeepServiceIntent.putStringArrayListExtra(
+        beeperServiceIntent.putStringArrayListExtra(
                 Beeper.PREF_ENABLED_HOURS,
                 enabledHours);
         Log.d(Beeper.LOG_TAG, "getBeeperServiceIntent " +
                 "enabled: " + enabled + ", " +
                 "volume: " + volume + ", " +
                 "enabledHours: " + enabledHours.toString());
-        return beeperBeepServiceIntent;
+        return beeperServiceIntent;
     }
 
     @Override
@@ -66,7 +64,11 @@ public class BeeperService extends Service {
         loadPreferences(intent);
 
         if (enabled) {
-            queBeepingService();
+            BeeperBeepService.queBeepingService(
+                    getApplicationContext(),
+                    null,
+                    volume,
+                    enabledHours);
             createNotification();
         } else {
             cancelBeepingService();
@@ -98,10 +100,7 @@ public class BeeperService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(Beeper.LOG_TAG, "Beeper service onCreate.");
-
         createNotification();
-
-        beeper = (Beeper) getApplication();
     }
 
     private void createNotification() {
@@ -135,57 +134,6 @@ public class BeeperService extends Service {
         return channelId;
     }
 
-    private void queBeepingService() {
-        GregorianCalendar current = new GregorianCalendar();
-        current.add(Calendar.MINUTE, 1);
-        LocalDateTime now = LocalDateTime.now();
-        current.set(now.getYear(), now.getMonth().getValue() - 1, now.getDayOfMonth(), now.getHour(), 0, 0);
-        current.add(GregorianCalendar.HOUR, 1);
-        LocalDateTime nextBeepTime = LocalDateTime.from(current.toZonedDateTime());
-        alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        if (beeperBeepServicePendingIntent != null) {
-            beeperBeepServicePendingIntent.cancel();
-        }
-        beeperBeepServicePendingIntent = getBeeperBeepServiceIntent();
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP,
-                current.getTimeInMillis(),
-                beeperBeepServicePendingIntent);
-        Log.d(Beeper.LOG_TAG, "Current time: " +
-                now.getHour() + ":" +
-                now.getMinute() + ":" +
-                now.getSecond());
-        Log.d(Beeper.LOG_TAG, "Next beep time: " +
-                nextBeepTime.getHour() + ":" +
-                nextBeepTime.getMinute() + ":" +
-                nextBeepTime.getSecond());
-        Log.d(Beeper.LOG_TAG, "Beeping service qued.");
-    }
-
-    private PendingIntent getBeeperBeepServiceIntent() {
-        return PendingIntent
-                .getService(beeper.getApplicationContext(),
-                        0,
-                        getBeeperBeepServiceIntent(
-                                getApplicationContext(),
-                                volume,
-                                enabledHours
-                        ),
-                        0);
-    }
-
-    private Intent getBeeperBeepServiceIntent(Context context,
-                                              Integer volume,
-                                              ArrayList<String> enabledHours) {
-        Intent beeperBeepServiceIntent = new Intent(context, BeeperBeepService.class);
-        beeperBeepServiceIntent.putExtra(
-                Beeper.PREF_BEEP_VOLUME,
-                volume);
-        beeperBeepServiceIntent.putStringArrayListExtra(
-                Beeper.PREF_ENABLED_HOURS,
-                enabledHours);
-        return beeperBeepServiceIntent;
-    }
-
     /*private void updateNotification(boolean flashLed) {
         if (notification == null) {
             return;
@@ -212,29 +160,28 @@ public class BeeperService extends Service {
         super.onTaskRemoved(rootIntent);
         cancelBeepingService();
         if (restart) {
-            sendBroadcast(new Intent(this, BeeperServiceRestartBroadcastReceiver.class));
+            Intent intent = new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT);
+            sendBroadcast(intent);
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        refreshPreferences();
-//        start(beeper.getBeeperServiceIntent());
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        prefs.unregisterOnSharedPreferenceChangeListener(this);
         cancelBeepingService();
         if (restart) {
-            sendBroadcast(new Intent(this, BeeperServiceRestartBroadcastReceiver.class));
+            Intent intent = new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT);
+            sendBroadcast(intent);
         }
     }
 
     private void cancelBeepingService() {
-        if (beeperBeepServicePendingIntent != null) {
-            beeperBeepServicePendingIntent.cancel();
-        }
-        alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(getBeeperBeepServiceIntent());
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(
+                BeeperBeepService.getBeeperBeepServicePendingIntent(
+                        getApplicationContext(),
+                        volume,
+                        enabledHours));
         Log.d(Beeper.LOG_TAG, "Beeping service canceled.");
     }
 
@@ -242,18 +189,4 @@ public class BeeperService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    /*@Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(Beeper.LOG_TAG, "Shared preferences listener.");
-        if (getBeeperEnabled(sharedPreferences)) {
-            queBeepingService();
-        } else {
-            Intent beeperBeepServiceIntent =
-                    new Intent(getApplicationContext(), BeeperBeepService.class);
-            PendingIntent pendingIntent = PendingIntent
-                    .getService(beeper.getApplicationContext(), 0, beeperBeepServiceIntent, 0);
-            alarmManager.cancel(pendingIntent);
-        }
-    }*/
 }
