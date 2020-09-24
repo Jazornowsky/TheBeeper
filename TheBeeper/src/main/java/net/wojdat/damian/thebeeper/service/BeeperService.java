@@ -54,12 +54,6 @@ public class BeeperService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Beeper.LOG_TAG, "BeeperService onStartCommand.");
-        /*notification = new Notification.Builder(getApplicationContext())
-                .setContentTitle(getString(R.string.service_name))
-                .setSmallIcon(R.drawable.watch04_stat_notify)
-                .setAutoCancel(true)
-                .setProgress(0, 0, false)
-                .build();*/
         loadPreferences(intent);
         if (enabled) {
             BeeperBeepService.queBeepingService(
@@ -135,27 +129,6 @@ public class BeeperService extends Service {
         service.createNotificationChannel(notificationChannel);
         return channelId;
     }
-
-    /*private void updateNotification(boolean flashLed) {
-        if (notification == null) {
-            return;
-        }
-
-        if (flashLed && isLedNotificationEnabled) {
-            notificationBuilder.setLights(Color.GREEN, 20, 200);
-        } else {
-            notificationBuilder.setLights(Color.BLACK, 0, 0);
-        }
-
-        if (beeper.getIsWakeLockAcquired() != null && beeper.getIsWakeLockAcquired()) {
-            notificationBuilder.setSmallIcon(R.drawable.watch04_stat_notify_lit);
-        } else {
-            notificationBuilder.setSmallIcon(R.drawable.watch04_stat_notify);
-        }
-
-        notificationBuilder.setProgress(60, now.get(Calendar.MINUTE), false);
-        notificationManager.notify(1, notificationBuilder.build());
-    }*/
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {

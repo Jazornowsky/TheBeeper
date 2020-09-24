@@ -2,7 +2,6 @@ package net.wojdat.damian.thebeeper.service;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
@@ -18,19 +17,6 @@ import androidx.core.content.ContextCompat;
 
 public class BeeperJobService extends JobService {
     private static BeeperServiceRestartBroadcastReceiver beeperServiceRestartBroadcastReceiver;
-    private static JobService instance;
-    private static JobParameters jobParameters;
-
-    public static void stopJob(Context context) {
-        if (instance != null && jobParameters != null) {
-            try {
-                instance.unregisterReceiver(beeperServiceRestartBroadcastReceiver);
-            } catch (Exception e) {
-
-            }
-            instance.jobFinished(jobParameters, true);
-        }
-    }
 
     @Override
     public boolean onStartJob(JobParameters params) {
@@ -47,8 +33,6 @@ public class BeeperJobService extends JobService {
         Log.d(Beeper.LOG_TAG, "BeeperJobService foreground beeper service started.");
         registerBeeperServiceRestartBroadcastReceiver();
         Log.d(Beeper.LOG_TAG, "BeeperJobService broadcast receiver restart service.");
-        instance = this;
-        BeeperJobService.jobParameters = params;
         return false;
     }
 
