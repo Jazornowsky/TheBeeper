@@ -16,9 +16,7 @@ import java.util.ArrayList;
 public class Beeper extends Application {
 
     public static final String LOG_TAG = "TheBeeper";
-    public static final String PREF_RESTART = "beeper_restart";
     public static final String PREF_ENABLED = "beeper_enabled";
-    public static final String PREF_KEEP_SCREEN_ON = "keep_screen_on";
     public static final String PREF_BEEP_VOLUME = "beep_volume";
     public static final String PREF_LED_NOTIFICATION_ENABLED = "led_notification_enabled";
     public static final String PREF_ENABLED_HOURS = "enabled_hours";
@@ -30,10 +28,6 @@ public class Beeper extends Application {
     private Integer beeperVolume;
     private ArrayList<String> enabledHours;
 
-    /**
-     * @suppressWarnings This app uses WakeLock permission to configure screen lit option globally - it's intended.
-     */
-    @SuppressWarnings("deprecation")
     @Override
     public void onCreate() {
         super.onCreate();

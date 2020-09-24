@@ -45,6 +45,8 @@
                 <action android:name="android.intent.action.REBOOT" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_INSTALL" />
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="net.wojdat.damian.thebeeper.BeeperService" />
 
                 <category android:name="android.intent.category.DEFAULT" />

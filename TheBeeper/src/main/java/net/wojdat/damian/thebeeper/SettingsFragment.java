@@ -1,22 +1,22 @@
 package net.wojdat.damian.thebeeper;
 
+import android.app.job.JobScheduler;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import net.wojdat.damian.thebeeper.preference.SliderDialog;
 import net.wojdat.damian.thebeeper.preference.SliderPreference;
-import net.wojdat.damian.thebeeper.service.BeeperService;
 import net.wojdat.damian.thebeeper.util.PreferenceUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 /**
  * Created by Xtreme on 2015-08-23.
@@ -28,8 +28,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         beeper = (Beeper) getActivity().getApplication();
-        getActivity().startForegroundService(
-                getBeeperServiceIntent(PreferenceManager.getDefaultSharedPreferences(getContext())));
+        BeeperServiceRestartBroadcastReceiver
+                .scheduleBeeperJobService(
+                        getContext(),
+                        (JobScheduler) getContext()
+                                .getSystemService(Context.JOB_SCHEDULER_SERVICE));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getActivity()
+                        .sendBroadcast(
+                                new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT));
+            }
+        }, 1000);
     }
 
     @Override
@@ -92,24 +103,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                     beeper.setEnabledHours(enabledHours);
                     break;
             }
-            getActivity().startForegroundService(getBeeperServiceIntent(sharedPreferences));
+            getActivity()
+                    .sendBroadcast(
+                            new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT));
         }
-    }
-
-    private Intent getBeeperServiceIntent(SharedPreferences sharedPreferences) {
-        ArrayList<String> enabledHours = new ArrayList<>(
-                sharedPreferences.getStringSet(
-                        Beeper.PREF_ENABLED_HOURS,
-                        Collections.<String>emptySet()));
-        Intent beeperServiceIntent = BeeperService.getBeeperServiceIntent(
-                getContext(),
-                sharedPreferences.getBoolean(
-                        Beeper.PREF_ENABLED,
-                        Boolean.TRUE),
-                sharedPreferences.getInt(
-                        Beeper.PREF_BEEP_VOLUME,
-                        Beeper.DEFAULT_BEEP_VOLUME),
-                enabledHours);
-        return beeperServiceIntent;
     }
 }

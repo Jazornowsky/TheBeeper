@@ -13,22 +13,13 @@ import net.wojdat.damian.thebeeper.service.BeeperJobService;
 
 public class BeeperServiceRestartBroadcastReceiver extends BroadcastReceiver {
     public static final String RESTART_INTENT = "net.wojdat.damian.thebeeper";
-    private JobScheduler jobScheduler;
+    private JobScheduler jobSchedulerService;
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.d(Beeper.LOG_TAG, "BeeperServiceRestartBroadcastReceiver onReceive.");
-        scheduleJob(context);
-    }
-
-    private void scheduleJob(Context context) {
+    public static void scheduleBeeperJobService(Context context,
+                                                JobScheduler jobScheduler) {
         Beeper beeper = (Beeper) context.getApplicationContext();
-        if (jobScheduler == null) {
-            jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        }
         ComponentName beeperServiceComponent = new ComponentName(context, BeeperJobService.class);
         PersistableBundle beeperServiceExtras = new PersistableBundle();
-        logPreferences(beeper);
         beeperServiceExtras.putBoolean(
                 Beeper.PREF_ENABLED,
                 beeper.getEnabled());
@@ -45,6 +36,21 @@ public class BeeperServiceRestartBroadcastReceiver extends BroadcastReceiver {
                 .build();
         jobScheduler.schedule(beeperServiceJobInfo);
         Log.d(Beeper.LOG_TAG, "BeeperServiceRestartBroadcastReceiver job scheduled.");
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.d(Beeper.LOG_TAG, "BeeperServiceRestartBroadcastReceiver onReceive.");
+        scheduleBeeperJobService(context);
+    }
+
+    private void scheduleBeeperJobService(Context context) {
+        Beeper beeper = (Beeper) context.getApplicationContext();
+        if (jobSchedulerService == null) {
+            jobSchedulerService = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        }
+        logPreferences(beeper);
+        scheduleBeeperJobService(context, jobSchedulerService);
     }
 
     private void logPreferences(Beeper beeper) {

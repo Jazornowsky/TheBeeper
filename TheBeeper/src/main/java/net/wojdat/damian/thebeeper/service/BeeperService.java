@@ -25,7 +25,6 @@ import androidx.core.app.NotificationCompat;
  * Created by 7 on 2015-02-26.
  */
 public class BeeperService extends Service {
-    private Boolean restart = Boolean.TRUE;
     private Boolean enabled;
     private Integer volume;
     private ArrayList<String> enabledHours;
@@ -62,7 +61,6 @@ public class BeeperService extends Service {
                 .setProgress(0, 0, false)
                 .build();*/
         loadPreferences(intent);
-
         if (enabled) {
             BeeperBeepService.queBeepingService(
                     getApplicationContext(),
@@ -73,6 +71,7 @@ public class BeeperService extends Service {
         } else {
             cancelBeepingService();
             deleteNotification();
+            stopSelf();
         }
         return START_STICKY;
     }
@@ -83,9 +82,6 @@ public class BeeperService extends Service {
     }
 
     private void loadPreferences(Intent intent) {
-        restart = intent.getBooleanExtra(
-                Beeper.PREF_RESTART,
-                Boolean.TRUE);
         enabled = intent.getBooleanExtra(
                 Beeper.PREF_ENABLED,
                 Beeper.DEFAULT_BEEPER_ENABLED);
@@ -110,14 +106,19 @@ public class BeeperService extends Service {
         notification = new NotificationCompat.Builder(this,
                 createNotificationChannel("my_service", "The Beeper background service"))
                 .setContentTitle(getString(R.string.service_name))
-                .setSmallIcon(R.drawable.watch04_star_white_test4)
-                .setAutoCancel(true)
-                .setProgress(0, 0, false)
                 .setContentText("The Beeper is active.")
+                .setSmallIcon(R.drawable.watch04_star_white_test4)
+                .setAutoCancel(false)
+                .setProgress(0, 0, false)
                 .setContentIntent(settingsPendingIntent)
                 .setShowWhen(false)
+                .setCategory("Service")
                 .build();
         startForeground(1, notification);
+        ;
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notification);
     }
 
     private void deleteNotification() {
@@ -125,12 +126,13 @@ public class BeeperService extends Service {
     }
 
     private String createNotificationChannel(String channelId, String channelName) {
-        NotificationChannel chan = new NotificationChannel(channelId,
-                channelName, NotificationManager.IMPORTANCE_NONE);
-        chan.setLightColor(Color.BLUE);
-        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationChannel notificationChannel = new NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_LOW);
+        notificationChannel.setLightColor(Color.BLUE);
+        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        notificationChannel.setDescription("Beeper background service.");
         NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        service.createNotificationChannel(chan);
+        service.createNotificationChannel(notificationChannel);
         return channelId;
     }
 
@@ -159,7 +161,7 @@ public class BeeperService extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         cancelBeepingService();
-        if (restart) {
+        if (enabled) {
             Intent intent = new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT);
             sendBroadcast(intent);
         }
@@ -169,7 +171,7 @@ public class BeeperService extends Service {
     public void onDestroy() {
         super.onDestroy();
         cancelBeepingService();
-        if (restart) {
+        if (enabled) {
             Intent intent = new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT);
             sendBroadcast(intent);
         }
