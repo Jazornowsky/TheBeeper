@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enabled">Pikanie</string>
+    <string name="keep_screen_on">Ekran włączony</string>
+    <string name="beep_volume">Głośnosć</string>
+    <string name="enable_led_notification">Migianie LED</string>
+    <string name="enabled_hours">Godziny powiadomień</string>
+</resources>

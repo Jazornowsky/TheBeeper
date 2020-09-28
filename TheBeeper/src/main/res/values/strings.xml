@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="service_name">The Beeper</string>
-    <string name="beeping_service">The Beeper - Beeping</string>
-    <string name="dummy_activity">Dummy Activity</string>
+    <string name="service_name" translatable="false">The Beeper</string>
+    <string name="beeping_service" translatable="false">The Beeper - Beeping</string>
+    <string name="dummy_activity" translatable="false">Dummy Activity</string>
 
     <!-- SettingsActivity/SettingsFragment -->
-    <string name="enabled">Enabled</string>
+    <string name="enabled">Beeping</string>
     <string name="keep_screen_on">Keep screen on</string>
     <string name="beep_volume">Beep volume</string>
     <string name="enable_led_notification">Enable led notification</string>

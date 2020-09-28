@@ -4,11 +4,6 @@
         app:defaultValue="true"
         app:key="beeper_enabled"
         app:title="@string/enabled" />
-    <!--
-    <CheckBoxPreference
-        app:key="led_notification_enabled"
-        app:defaultValue="false"
-        app:title="@string/enable_led_notification"/>-->
     <net.wojdat.damian.thebeeper.preference.SliderPreference
         app:defaultValue="50"
         app:key="beep_volume"

@@ -36,9 +36,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                getActivity()
-                        .sendBroadcast(
-                                new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT));
+                if (getActivity() != null) {
+                    getActivity()
+                            .sendBroadcast(
+                                    new Intent(BeeperServiceRestartBroadcastReceiver.RESTART_INTENT));
+                }
             }
         }, 1000);
     }
